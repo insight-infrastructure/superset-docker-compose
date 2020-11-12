@@ -3,6 +3,5 @@ version: '3.7'
 services:
   nginx:
     environment:
-      - fqdn=foobar.com
-      - NGINX_PORT=80
-    command: /bin/bash -c "envsubst < /etc/nginx/conf.d/superset.conf > /etc/nginx/conf.d/superset.conf && nginx -g 'daemon off;'"
+      - FQDN=${POSTGRES_PASSWORD:-superset}
+    command: /bin/bash -c "mv /etc/nginx/conf.d/superset.conf.mv /etc/nginx/conf.d/superset.conf && envsubst < /etc/nginx/conf.d/superset.conf > /etc/nginx/conf.d/superset.conf && nginx -g 'daemon off;'"
