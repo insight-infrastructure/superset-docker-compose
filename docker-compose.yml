@@ -1,0 +1,68 @@
+version: '3.7'
+
+x-superset-depends-on: &superset-depends-on
+  - postgres
+  - redis
+
+x-final-depends-on: &final-depends-on
+  - superset
+  - worker
+
+x-superset-volumes: &superset-volumes
+  - ./superset:/app/superset
+
+services:
+  nginx:
+    image: nginx:latest
+    depends_on: *final-depends-on
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+  
+  redis:
+    image: redis
+    restart: always
+    volumes:
+      - redis:/data
+  
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-superset}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-superset}
+      POSTGRES_USER: ${POSTGRES_USER:-superset}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+  
+  superset:
+    image: amancevice/superset
+    restart: always
+    depends_on: *superset-depends-on
+    ports:
+      - "8088:8088"
+    volumes:
+      - ./superset:/etc/superset
+  
+  worker:
+    image: amancevice/superset
+    restart: always
+    depends_on: *superset-depends-on
+    volumes:
+      - ./superset:/etc/superset
+    command: "celery worker --app=superset.tasks.celery_app:app"
+  
+  flower:
+    image: amancevice/superset
+    restart: always
+    depends_on: *final-depends-on
+    ports:
+      - "5555:5555"
+    volumes:
+      - ./superset:/etc/superset
+    command: celery flower --app=superset.tasks.celery_app:app
+    
+volumes:
+  postgres:
+  redis:
