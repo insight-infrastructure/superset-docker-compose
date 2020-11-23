@@ -2,8 +2,8 @@
 server {
     listen 443 ssl;
 
-	ssl_certificate /etc/letsencrypt/live/{{fqdn}}/fullchain.pem;
-	ssl_certificate_key /etc/letsencrypt/live/{{fqdn}}/privkey.pem;
+	ssl_certificate /etc/nginx/certs/fullchain.pem;
+	ssl_certificate_key /etc/nginx/certs/privkey.pem;
 
 	# from https://cipherli.st/
 	# and https://raymii.org/s/tutorials/Strong_SSL_Security_On_nginx.html
@@ -32,7 +32,7 @@ server {
 
     access_log /var/log/nginx/sub.log combined;
 
-	server_name {{fqdn}};
+	server_name {{FQDN}};
 
 	location /.well-known {
 		alias /var/www/html/.well-known;

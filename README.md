@@ -4,6 +4,8 @@ Docker compose deployment of superset with nginx parameterized so that it can be
 
 Modify the `.env` file to override any variables in the `superset/superset_config.py` file. 
 
+> Note - SSL still has bugs 
+
 ### Usage
 
 ```shell script

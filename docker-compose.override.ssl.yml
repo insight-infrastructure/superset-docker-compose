@@ -2,6 +2,9 @@ version: '3.7'
 
 services:
   nginx:
-    environment:
-      - FQDN=${POSTGRES_PASSWORD:-superset}
+    volumes:
+      - /etc/letsencrypt/live/${FQDN}/privkey.pem:/etc/nginx/certs/privkey.pem:ro
+      - /etc/letsencrypt/live/${FQDN}/privkey.pem:/etc/nginx/certs/privkey.pem:ro
+      - ./nginx:/etc/nginx/superset.conf
+      - ./nginx:/etc/nginx/conf.d
     command: /bin/bash -c "mv /etc/nginx/conf.d/superset.conf.mv /etc/nginx/conf.d/superset.conf && envsubst < /etc/nginx/conf.d/superset.conf > /etc/nginx/conf.d/superset.conf && nginx -g 'daemon off;'"
